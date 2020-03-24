@@ -440,7 +440,40 @@ class Server_Manager_Whm extends Server_Manager
         }
 
         return $json;
-    }
+	}
+	
+	private function _createUserLoginSession($var_hash)
+    {
+        $action = 'create_user_session';			
+        return $this->_request($action, $var_hash);
+	}
+
+	public function getCpanelSessionUrl(Server_Account $a){
+		$this->getLog()->info('generating cpanel session token for '.$a->getUsername());
+		$var_hash = Array(
+            'user'      => $a->getUsername(),
+            'preferred_domain'    => $a->getDomain(),
+			'service'	=> 'cpaneld',
+			'api.version' => '1'
+		);		
+		$session_data = $this->_createUserLoginSession($var_hash);
+
+		return $session_data->data->url;
+	}
+
+	public function getWHMSessionUrl(\Model_ServiceHostingServer $model){
+		$this->getLog()->info('generating whm session token for '.$model->username);
+		$var_hash = Array(
+			'user'      => $model->username,
+            'preferred_domain'    => $model->hostname,
+			'service'	=> 'whostmgrd',
+			'api.version' => '1'
+		);
+		
+		$session_data = $this->_createUserLoginSession($var_hash);
+		return $session_data->data->url;
+	}
+
 }
 
 

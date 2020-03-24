@@ -955,4 +955,22 @@ class Service implements InjectionAwareInterface
         }
         return $result;
     }
+
+    public function getCpanelSessionUrl(\Model_ServiceHosting $model){
+                
+         list($adapter, $account) = $this->_getAM($model); 
+         $url =   $adapter->getCpanelSessionUrl($account);        
+       return $url;
+	   
+    }
+    
+    public function getWHMSessionUrl(\Model_ServiceHostingServer $model){  
+                
+        $adapter = $this->getServerManager($model);
+        $url =   $adapter->getWHMSessionUrl($model);
+       
+       return $url;
+	   
+    }
+
 }
