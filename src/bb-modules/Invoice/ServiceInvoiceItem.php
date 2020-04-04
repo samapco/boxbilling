@@ -169,6 +169,16 @@ class ServiceInvoiceItem implements InjectionAwareInterface
         $pi->taxed          = $this->di['array_get']($data, 'taxed', false);
         $pi->created_at     = date('Y-m-d H:i:s');
         $pi->updated_at     = date('Y-m-d H:i:s');
+		
+		// from https://github.com/robin-bd/boxbilling/commit/d3e784bb52db59cd351e30236763168ceb49d830
+		if($period){
+            $date_format = '%G-%m-%d';
+            $from_time = strftime($date_format, strtotime($pi->created_at));
+            $end_time = $periodCheck->getExpirationTime();
+            $end_time = strftime($date_format, $end_time);
+            $pi->title .= ' ('.$from_time.' - '.$end_time.')';
+        }
+		
         $itemId = $this->di['db']->store($pi);
 
         return (int) $itemId;
@@ -301,7 +311,30 @@ class ServiceInvoiceItem implements InjectionAwareInterface
         $pi->rel_id         = $order->id;
         $pi->task           = $task;
         $pi->status         = \Model_InvoiceItem::STATUS_PENDING_PAYMENT;
+		// show period in title
+		//from https://github.com/robin-bd/boxbilling/commit/d3e784bb52db59cd351e30236763168ceb49d830
+        if($order->period){
+			$date_format     = '%G-%m-%d';
+             if($order->expires_at){
+                $periodCheck    = $this->di['period']($order->period);
+                
+                $from_time      = strftime($date_format, strtotime($order->expires_at));
+                $end_time       = $periodCheck->getExpirationTime(strtotime($order->expires_at));
+                $end_time       = strftime($date_format, $end_time);
+                $pi->title      = $order->title.' ('.$from_time.' - '.$end_time.')';           
+            }
+            else{
+                $periodCheck    = $this->di['period']($order->period);
+                $from_time      = strftime($date_format, strtotime(date('Y-m-d H:i:s')));
+                $end_time       = $periodCheck->getExpirationTime();
+                $end_time       = strftime($date_format, $end_time);
+                $pi->title      = $order->title.' ('.$from_time.' - '.$end_time.')'; 
+            }           
+        }
+        else{
         $pi->title          = $order->title;
+        }
+		
         $pi->period         = $order->period;
         $pi->quantity       = $order->quantity;
         $pi->unit           = $order->unit;
