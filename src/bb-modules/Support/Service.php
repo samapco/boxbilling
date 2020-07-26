@@ -355,7 +355,7 @@ class Service implements \Box\InjectionAwareInterface
             $query = $query . ' WHERE ' . implode(' AND ', $where);
         }
 
-        $query .= " GROUP BY st.id ORDER BY stm.created_at DESC, st.priority ASC, st.id DESC";
+        $query .= " GROUP BY st.id ORDER BY stm.updated_at DESC, st.priority ASC, st.id DESC";
 
         return array($query, $bindings);
     }
@@ -548,6 +548,7 @@ class Service implements \Box\InjectionAwareInterface
         $data['replies']  = $this->messageGetRepliesCount($model);
         $data['first']    = $this->messageToApiArray($firstSupportTicketMessage);
         $data['helpdesk'] = $this->helpdeskToApiArray($supportHelpdesk);
+         $data['client']  = $this->getClientApiArrayForTicket($model);
 
         if ($deep) {
             $messages = $this->messageGetTicketMessages($model);

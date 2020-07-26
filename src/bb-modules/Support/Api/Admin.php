@@ -35,6 +35,13 @@ class Admin extends \Api_Abstract
             $pager['list'][$key] = $this->getService()->toApiArray($ticket, true, $this->getIdentity());
         }
 
+        		// sort list by updated
+		usort($pager['list'], function ($item1, $item2) {
+    if ($item2['updated_at'] == $item1['updated_at']) return 0;
+    return $item2['updated_at'] < $item1['updated_at'] ? -1 : 1;
+});	
+		
+
         return $pager;
     }
 
