@@ -11,7 +11,7 @@
  */
 
 
-class Box_TwigExtensions extends Twig\Extension\AbstractExtension implements \Box\InjectionAwareInterface
+class Box_TwigExtensions extends Twig\Extension\AbstractExtension implements \Box\InjectionAwareInterface, \Twig\Extension\GlobalsInterface 
 {
     protected $di;
 
@@ -116,6 +116,30 @@ class Box_TwigExtensions extends Twig\Extension\AbstractExtension implements \Bo
     function twig_bb_admin_link_filter($link, $params = null)
     {
         return $this->di['url']->adminLink($link, $params);
+    }
+
+    public function getGlobals()
+    {
+        $service = $this->di['mod_service']('theme');
+        $code = $service->getCurrentClientAreaThemeCode();
+        $theme = $service->getTheme($code);
+        $settings = $service->getThemeSettings($theme);
+        $globals = array(
+            'guest' => $this->di['api_guest'],
+            'current_theme' => $code,
+            'settings' => $settings,
+        );
+
+        if($this->di['auth']->isClientLoggedIn()) {
+            $globals['client'] = $this->di['api_client'];
+        }
+
+        if($this->di['auth']->isAdminLoggedIn()) {
+            $globals['admin'] = $this->di['api_admin'];
+        }
+
+        return $globals;
+       
     }
 
 }

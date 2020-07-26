@@ -95,7 +95,7 @@ class Box_AppClient extends Box_App
 
         $twig = $this->di['twig'];
         $twig->setLoader($loader);
-
+  /*  
         $twig->addGlobal('current_theme', $code);
         $twig->addGlobal('settings', $settings);
 
@@ -106,6 +106,7 @@ class Box_AppClient extends Box_App
         if($this->di['auth']->isAdminLoggedIn()) {
             $twig->addGlobal('admin', $this->di['api_admin']);
         }
+    */
 
         return $twig;
     }
