@@ -340,8 +340,12 @@ class Service implements InjectionAwareInterface
         if(isset($remove_after_days) && $remove_after_days) {
             //removing old invoices
             $days = (int)$remove_after_days;
-            $sql="DELETE FROM invoice WHERE status = 'unpaid' AND DATEDIFF(NOW(), due_at) > $days";
-            $di['db']->exec($sql);
+            $conditions = 'status = ? and DATEDIFF(NOW(), due_at) > ?';
+            $list = $di['db']->find('Invoice', $conditions, array(\Model_Invoice::STATUS_UNPAID, $days));
+            $invoiceService = $di['mod_service']('Invoice');
+            foreach($list as $invoice) {
+                $invoiceService->rmInvoice($invoice);
+            }
         }
     }
 
