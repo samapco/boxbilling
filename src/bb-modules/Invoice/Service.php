@@ -880,7 +880,8 @@ class Service implements InjectionAwareInterface
 
         $due_days = isset($data['due_days']) ? (int)$data['due_days'] : null;
         $invoice = $this->generateForOrder($model, $due_days);
-        $this->approveInvoice($invoice, (array('id'=>$invoice->id, 'use_credits'=>true)));
+		$use_credit = $this->_isAutoUseBalance();
+        $this->approveInvoice($invoice, (array('id'=>$invoice->id, 'use_credits'=>$use_credit)));
 
         $this->di['events_manager']->fire(array('event'=>'onAfterAdminGenerateRenewalInvoice', 'params'=>array('order_id'=>$model->id, 'id'=>$invoice->id)));
 
@@ -890,6 +891,8 @@ class Service implements InjectionAwareInterface
 
     public function doBatchPayWithCredits(array $data)
     {
+        $use_credit = $this->di['array_get']($data, 'use_credits', $this->_isAutoUseBalance());
+        if($use_credit){ 
         $unpaid = $this->findAllUnpaid($data);
         foreach($unpaid as $proforma) {
             try {
@@ -902,6 +905,7 @@ class Service implements InjectionAwareInterface
             }
         }
         $this->di['logger']->info('Executed action to try cover unpaid invoices with client credits');
+        } 
         return true;
     }
 
@@ -984,7 +988,8 @@ class Service implements InjectionAwareInterface
             try {
                 $model = $this->di['db']->getExistingModelById('ClientOrder', $order['id']);
                 $invoice = $this->generateForOrder($model);
-                $this->approveInvoice($invoice, array('id'=>$invoice->id, 'use_credits'=>true));
+				$use_credit = $this->_isAutoUseBalance();
+                $this->approveInvoice($invoice, array('id'=>$invoice->id, 'use_credits'=>$use_credit));
             } catch(\Exception $e) {
                 error_log($e->getMessage());
             }
@@ -1383,6 +1388,24 @@ class Service implements InjectionAwareInterface
         $systemService = $this->di['mod_service']('system');
         return (bool) $systemService->getParamValue('invoice_auto_approval', true);
     }
+
+    /**
+     * @return bool
+     */
+    private function _isAutoUseBalance()
+    {
+        /**
+         * @var \Box\Mod\System\Service $systemService
+         */
+        $systemService = $this->di['mod_service']('system');
+        $can_use = (bool) $systemService->getParamValue('invoice_use_balance', false);
+        if(!$can_use){ 
+             $this->di['logger']->info('Paying invoices automatically with available credit is disabled. Enable it in Invoice settings.');  
+         }
+        return $can_use;
+    }
+	
+	
 
     /**
      * @param \Model_Invoice $invoice

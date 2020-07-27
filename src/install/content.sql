@@ -385,7 +385,8 @@ VALUES
 	(24,'nameserver_3',NULL,0,NULL,NULL,'2012-01-01 12:00:00','2012-01-01 12:00:00'),
 	(25,'nameserver_4',NULL,0,NULL,NULL,'2012-01-01 12:00:00','2012-01-01 12:00:00'),
 	(26,'funds_min_amount','10',0,NULL,NULL,'2012-01-01 12:00:00','2012-01-01 12:00:00'),
-	(27,'funds_max_amount','200',0,NULL,NULL,'2012-01-01 12:00:00','2012-01-01 12:00:00');
+	(27,'funds_max_amount','200',0,NULL,NULL,'2012-01-01 12:00:00','2012-01-01 12:00:00'),
+	(28,'invoice_use_balance','1',0,NULL,NULL,'2020-01-01 12:00:00','2020-01-01 12:00:00');
 
 /*!40000 ALTER TABLE `setting` ENABLE KEYS */;
 UNLOCK TABLES;

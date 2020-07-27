@@ -116,6 +116,16 @@
             <div class="fix"></div>
         </div>
 
+        <div class="rowElem">
+            <label>{% trans 'Auto pay invoice with available funds' %}</label>
+            <div class="formRight">
+                <input type="radio" name="invoice_use_balance" value="1" {% if params.invoice_use_balance == "1" %}checked="checked"{% endif %}/><label>{% trans 'Yes' %}</label>
+                <input type="radio" name="invoice_use_balance" value="0" {% if params.invoice_use_balance == "0" %}checked="checked"{% endif %}/><label>{% trans 'No' %}</label>
+            </div>
+            <div class="fix"></div>
+        </div>
+
+
         <input type="submit" value="{% trans 'Update settings' %}" class="greyishBtn submitForm" />
         </fieldset>
     </form>
