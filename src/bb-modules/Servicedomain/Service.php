@@ -121,7 +121,7 @@ class Service implements \Box\InjectionAwareInterface
             $required = array(
                 'register_tld'   => 'Domain registration tld parameter missing.',
                 'register_sld'   => 'Domain registration sld parameter missing.',
-                'register_years' => 'Years parameter is missing for domain configuration.',
+                'register_years' => 'Years parameter is missing for domain configuration. Check domain availability first and select period.',
             );
             $this->di['validator']->checkRequiredParamsForArray($required, $data);
 
@@ -384,6 +384,13 @@ class Service implements \Box\InjectionAwareInterface
         $ns2 = $data['ns2'];
         $ns3 = isset($data['ns3']) ? $data['ns3'] : NULL;
         $ns4 = isset($data['ns4']) ? $data['ns4'] : NULL;
+        $model->ns1        = $ns1;
+        $model->ns2        = $ns2;
+        $model->ns3        = $ns3;
+        $model->ns4        = $ns4;
+        $model->updated_at = date('Y-m-d H:i:s');
+
+        $id = $this->di['db']->store($model);
 
         //@adapterAction
         list($domain, $adapter) = $this->_getD($model);
@@ -393,13 +400,7 @@ class Service implements \Box\InjectionAwareInterface
         $domain->setNs4($ns4);
         $adapter->modifyNs($domain);
 
-        $model->ns1        = $ns1;
-        $model->ns2        = $ns2;
-        $model->ns3        = $ns3;
-        $model->ns4        = $ns4;
-        $model->updated_at = date('Y-m-d H:i:s');
 
-        $id = $this->di['db']->store($model);
 
         $this->di['logger']->info('Updated domain #%s nameservers', $id);
 
@@ -421,7 +422,6 @@ class Service implements \Box\InjectionAwareInterface
             'email'      => 'Required field email is missing',
             'company'    => 'Required field company is missing',
             'address1'   => 'Required field address1 is missing',
-            'address2'   => 'Required field address2 is missing',
             'country'    => 'Required field country is missing',
             'city'       => 'Required field city is missing',
             'state'      => 'Required field state is missing',
@@ -444,14 +444,15 @@ class Service implements \Box\InjectionAwareInterface
         $model->contact_phone_cc   = $contact['phone_cc'];
         $model->contact_phone      = $contact['phone'];
 
-        //@adapterAction
-        list($domain, $adapter) = $this->_getD($model);
-        $adapter->modifyContact($domain);
+        
 
         $model->updated_at = date('Y-m-d H:i:s');
 
         $id = $this->di['db']->store($model);
 
+        //@adapterAction
+        list($domain, $adapter) = $this->_getD($model);
+        $adapter->modifyContact($domain);
         $this->di['logger']->info('Updated domain #%s WHOIS details', $id);
 
         return true;
@@ -557,6 +558,8 @@ class Service implements \Box\InjectionAwareInterface
             throw new \Box_Exception('Domain name is not valid');
         }
 
+        // set to lowercase
+        $sld = strtolower($sld);
         $validator = $this->di['validator'];
         if (!$validator->isSldValid($sld)) {
             throw new \Box_Exception('Domain name :domain is not valid', array(':domain' => $sld));
