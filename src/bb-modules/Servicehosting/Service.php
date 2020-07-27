@@ -550,6 +550,11 @@ class Service implements InjectionAwareInterface
             $model->ip = $data['ip'];
         }
 
+        if(isset($data['service_hosting_server_id']) && !empty($data['service_hosting_server_id'])) {
+            $model->service_hosting_server_id = $data['service_hosting_server_id'];
+        }
+
+		
         $model->updated_at = date('Y-m-d H:i:s');
         $this->di['db']->store($model);
 

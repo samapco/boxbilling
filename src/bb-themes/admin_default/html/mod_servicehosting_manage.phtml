@@ -94,7 +94,25 @@
         </tr>
     </tfoot>
 </table>
+<div class="help">
+    <h2>{% trans 'Change Server' %}</h2>
+</div>
 
+<form action="{{ 'api/admin/servicehosting/update'|link }}" method="post" class="mainForm api-form save" data-api-msg="{% trans 'Server changed' %}">
+<fieldset>
+    <div class="rowElem noborder">
+        <label>{% trans 'New Server' %}:</label>
+        <div class="formRight">
+
+			 {{ mf.selectbox('service_hosting_server_id', admin.servicehosting_server_get_pairs, server.id, 1) }}
+        </div>
+        <div class="fix"></div>
+    </div>
+
+    <input type="hidden" name="order_id" value="{{ order.id }}">
+    <input type="submit" value="{% trans 'Update Server' %}" class="greyishBtn submitForm" />
+</fieldset>
+</form>
 <div class="help">
     <h2>{% trans 'Change hosting plan' %}</h2>
 </div>
