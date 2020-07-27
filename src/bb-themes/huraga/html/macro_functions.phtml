@@ -26,7 +26,7 @@
 {% endmacro %}
 
 {% macro status_name(status) %}
-    {{ status|replace({'_': " "})|title|trans }}
+  {{ status|replace({'_': " "})|title|trans }}
 {% endmacro %}
 
 {# deprecated - use period_title filter #}
@@ -84,4 +84,15 @@
         {% endif %}
     {% endif %}
 {% endif %}
+{% endmacro %}
+
+{% macro table_search() %}
+<div style="position: relative;">
+    <div class="dataTables_filter">
+        <form method="get" action="">
+            <input type="hidden" name="_url" value="{{request._url}}"/>
+            <label>{% trans %}Search:{% endtrans %} <input type="text" name="search" placeholder="{% trans %}Enter search text..{% endtrans %}" value="{{request.search}}"><div class="srch"></div></label>
+        </form>
+    </div>
+</div>
 {% endmacro %}
