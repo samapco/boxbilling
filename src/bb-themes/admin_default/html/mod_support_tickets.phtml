@@ -121,6 +121,7 @@
                 <thead>
                     <tr>
                         <td style="width: 2%"><input type="checkbox" class="batch-delete-master-checkbox"/></td>
+                        <td>{% trans 'ID' %}</td>
                         <td colspan="2">{% trans 'Client' %}</td>
                         <td>{% trans 'Subject' %}</td>
                         <td>{% trans 'Status' %}</td>
@@ -134,6 +135,7 @@
                     {% for i, ticket in tickets.list %}
                     <tr class="priority_{{ ticket.priority }}">
                         <td><input type="checkbox" class="batch-delete-checkbox" data-item-id="{{ ticket.id }}"/></td>
+                        <td>{{ ticket.id }}</td>
                         <td style="width:5%"><a href="{{ 'client/manage'|alink }}/{{ ticket.client_id }}"><img src="{{ ticket.client.email|gravatar }}?size=20" alt="gravatar" /></a></td>
                         <td style="width:20%"><a href="{{ 'client/manage'|alink }}/{{ ticket.client_id }}">{{ ticket.client.first_name|truncate(1, null, '.') }} {{ ticket.client.last_name }}</a></td>
                         <td>
