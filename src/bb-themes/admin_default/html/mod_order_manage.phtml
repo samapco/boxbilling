@@ -354,7 +354,15 @@
                         <div class="fix"></div>
                     </div>
                     {% endfor %}
-
+					{% if (order.config.type == "hosting") and  (order.config.username is not defined) %} 
+                    <div class="rowElem noborder">
+                        <label>username</label>
+                        <div class="formRight noborder">
+					      <input type="text" name="config[username]" value="" placeholder="enter username if order failed due to existing user" /> 
+						  </div>
+                        <div class="fix"></div>
+                    </div>
+					{% endif %}
                      <input type="submit" value="{% trans 'Update' %}" class="greyishBtn submitForm" />
                 </fieldset>
                 <input type="hidden" name="id" value="{{ order.id }}">
