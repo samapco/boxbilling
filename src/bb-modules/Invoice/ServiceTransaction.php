@@ -707,4 +707,55 @@ class ServiceTransaction implements InjectionAwareInterface
         $this->di['db']->store($credit);
     }
 
+    public function processGatewayAction($txn_id, $action){
+
+        $tx = $this->di['db']->load('Transaction', $txn_id);
+        if(!$tx) {
+            throw new \Box_Exception('Transaction :id not found.', array('id'=>$txn_id), 404);
+        }
+
+        if(empty($tx->gateway_id)) {
+            throw new \Box_Exception('Could not determine transaction origin. Transaction payment gateway is unknown.', null, 701);
+        }
+
+        $gtw = $this->di['db']->load('PayGateway', $tx->gateway_id);
+        if(!$gtw instanceof \Model_PayGateway) {
+            throw new \Box_Exception('Can not handle transaction received from unknown payment gateway: :id', array(':id'=>$tx->gateway_id), 704);
+        }
+
+        $payGatewayService = $this->di['mod_service']('Invoice', 'PayGateway');
+        $adapter = $payGatewayService->getPaymentAdapter($gtw);
+        if(!method_exists($adapter, 'processAction')) {
+            throw new \Box_Exception('Payment adapter :adapter does not support action :action', array(':adapter'=>$gtw->name, ':action'=>'processAction'), 705);
+        }
+
+        $ipn = json_decode($tx->ipn, 1);
+        return $adapter->processAction($this->di['api_system'], $txn_id, $ipn, $tx->gateway_id, $action);
+    }
+
+    public function getGatewayActions($txn_id){
+
+        $tx = $this->di['db']->load('Transaction', $txn_id);
+        if(!$tx) {
+            throw new \Box_Exception('Transaction :id not found.', array('id'=>$txn_id), 404);
+        }
+
+        if(empty($tx->gateway_id)) {
+            throw new \Box_Exception('Could not determine transaction origin. Transaction payment gateway is unknown.', null, 701);
+        }
+
+        $gtw = $this->di['db']->load('PayGateway', $tx->gateway_id);
+        if(!$gtw instanceof \Model_PayGateway) {
+            throw new \Box_Exception('Can not handle transaction received from unknown payment gateway: :id', array(':id'=>$tx->gateway_id), 704);
+        }
+
+        $payGatewayService = $this->di['mod_service']('Invoice', 'PayGateway');
+        $adapter = $payGatewayService->getPaymentAdapter($gtw);
+        if(!method_exists($adapter, 'getActions')) {
+            throw new \Box_Exception('Payment adapter :adapter does not support action :action', array(':adapter'=>$gtw->name, ':action'=>'getActions'), 705);
+        }
+
+        return $adapter->getActions();
+   
+    }
 }

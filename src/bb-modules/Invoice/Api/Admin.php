@@ -523,6 +523,35 @@ class Admin extends \Api_Abstract
     }
 
     /**
+     * Process actions defined by gateway
+     */
+    public function transaction_process_gateway_action($data){
+        $required = array(
+            'id' => 'Gateway id not passed',
+            'action' => 'action to process not passed'
+        );
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $model = $this->di['db']->getExistingModelById('Transaction', $data['id'], 'Transaction not found');
+
+        $transactionService = $this->di['mod_service']('Invoice', 'Transaction');
+        return $transactionService->processGatewayAction( $data['id'],  $data['action']);
+    }
+
+    public function transaction_gateway_actions($data){
+        
+        $required = array(
+            'id' => 'Gateway id not passed'
+        );
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $model = $this->di['db']->getExistingModelById('Transaction', $data['id'], 'Transaction not found');
+        
+        $transactionService = $this->di['mod_service']('Invoice', 'Transaction');
+        return $transactionService->getGatewayActions( $data['id']);
+      }
+    
+    /**
      * Get available gateways
      * 
      * @return array

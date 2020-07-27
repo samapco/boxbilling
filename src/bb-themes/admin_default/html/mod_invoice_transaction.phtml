@@ -21,6 +21,7 @@
         <li><a href="#tab-manage">{% trans 'Manage' %}</a></li>
         <li><a href="#tab-ipn">{% trans 'IPN' %}</a></li>
         <li><a href="#tab-note">{% trans 'Notes' %}</a></li>
+        <li><a href="#tab-actions">{% trans 'Gateway Actions' %}</a></li>
     </ul>
 
     <div class="tab_container">
@@ -289,6 +290,33 @@
             {% endif %}
             <div class="fix"></div>
         </div>
+
+        <div id="tab-actions" class="tab_content nopadding">
+            <div class="help">
+                <h3>{% trans 'Actions required by gateway.' %}</h3>
+            </div>
+            {% set actions = admin.invoice_transaction_gateway_actions({"id":transaction.id}) %}
+
+            {% if actions|length > 0 %}
+            <table class="tableStatic wide">
+                <tbody>
+                {% for key,action in actions %}
+                   <tr>
+                   <td>{{action.name}}</td>
+                   <td>
+                   <a class="btn55 mr10 api-link" href="{{ 'api/admin/invoice/transaction_process_gateway_action'|link({'id' : transaction.id, 'action' : action.name}) }}" data-api-confirm="Are you sure?" data-api-reload="1"><span>{{action.label}}</span></a>
+                    </td>
+                   </tr> 
+                    
+                {% endfor %}  
+                </tbody>
+            </table>
+            {% else %} 
+            <p>No actions specified by gateway.</p> 
+            {% endif%}
+           
+        </div>
+
     </div>
 
     <div class="fix"></div>
