@@ -39,9 +39,10 @@ class Box_License implements \Box\InjectionAwareInterface
 
     public function check()
     {
-        if(!$this->isValid()) {
+        /*if(!$this->isValid()) {
             throw new \Box_Exception('License is not valid');
-        }
+        } */
+        return true;
     }
 
     public function isValid()
