@@ -235,6 +235,14 @@
                     </div>
 
                     <div class="rowElem">
+                        <label>{% trans 'Quantity' %}</label>
+                        <div class="formRight">
+                            <input type="text" name="quantity" value="{{order.quantity}}" />
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
                         <label>{% trans 'Reason' %}</label>
                         <div class="formRight">
                             <input type="text" name="reason" value="{{order.reason}}"/>
