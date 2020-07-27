@@ -874,6 +874,12 @@ class Service implements InjectionAwareInterface
             $order->expires_at = NULL;
         }
 
+		$client_id = $this->di['array_get']($data, 'client_id');
+		if(isset($client_id) && $client_id != $order->client_id){
+			$order->client_id = $client_id;
+		}
+		
+		
         $order->invoice_option = $this->di['array_get']($data, 'invoice_option', $order->invoice_option);
         $order->title          = $this->di['array_get']($data, 'title', $order->title);
         $order->price          = $this->di['array_get']($data, 'price', $order->price);

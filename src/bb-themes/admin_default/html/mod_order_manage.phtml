@@ -201,6 +201,16 @@
             </div>
             <form method="post" action="{{ 'api/admin/order/update'|link }}" class="mainForm api-form" data-api-reload="1">
                 <fieldset>
+				 <div class="rowElem noborder">
+                    <label>{% trans 'Client ID (Change Owner)' %}</label>
+                    <div class="formRight">
+                        <input type="text" id="client_selector" placeholder="{% trans 'Start typing clients name, email or ID ' %}" />
+                        <input type="hidden" name="client_id" value="{{ order.client.id }}" id="client_id"/>
+                       
+                    </div>
+                    <div class="fix"></div>
+                </div>
+				
 
                     <div class="rowElem noborder">
                         <label>{% trans 'Title' %}</label>
@@ -560,5 +570,34 @@
         $('#suspend_popup').hide();
     }
     };
+	
+	// Added to get client when changing order owner
+	$('#client_selector').autocomplete({
+        source: function( request, response ) {
+            $.ajax({
+                url: bb.restUrl('admin/client/get_pairs'),
+                dataType: "json",
+                data: {
+                    per_page: 10,
+                    search: request.term
+                },
+                success: function( data ) {
+                    response( $.map( data.result, function( name, id) {
+                        return {
+                            label: name,
+                            value: id
+                        }
+                    }));
+                }
+            });
+        },
+        minLength: 1,
+        select: function( event, ui ) {
+            $("#client_selector").val(ui.item.label);
+            $("#client_id").val(ui.item.value);
+            return false;
+        }
+    });
+
 </script>
 {% endblock %}
