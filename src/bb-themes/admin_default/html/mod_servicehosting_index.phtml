@@ -39,6 +39,7 @@
                         <td>{{ mf.status_name(server.manager) }}</td>
                         <td>{{ mf.q(server.active) }}</td>
                         <td class="actions">
+                            <a class="bb-button btn14" href="#"  onclick="loginToWhm({{server.id}});return false;">WHM Login</a>                            
                             <a class="bb-button btn14" href="{{server.cpanel_url}}" target="_blank"><img src="images/icons/dark/cog.png" alt=""></a>
                             <a class="bb-button btn14 api-link" data-api-msg="Connected" href="{{ 'api/admin/servicehosting/server_test_connection'|link({'id' : server.id}) }}" title="Test connection"><img src="images/icons/dark/signal.png" alt=""></a>
                             <a class="bb-button btn14" href="{{ '/servicehosting/server'|alink }}/{{server.id}}"><img src="images/icons/dark/pencil.png" alt=""></a>
@@ -273,6 +274,16 @@ $(function() {
 
 function onAfterHostingPlanCreate(id) {
     bb.redirect("{{ 'servicehosting/plan'|alink}}/"+id);
+}
+
+function loginToWhm(server_id){    
+		 bb.post(
+            'admin/servicehosting/login_server_session',
+             {id: server_id},
+            function(result) {
+				window.open(result, '_blank');
+            }
+        );
 }
 </script>
 {% endblock %}

@@ -83,7 +83,8 @@
             <td colspan="2">
                 <div class="aligncenter">
                     {{ order_actions }}
-                    <a class="btn55 mr10" href="{{ server.cpanel_url }}" target="_blank"><img src="images/icons/middlenav/linux.png" alt=""><span>{% trans 'Jump to cPanel' %}</span></a>
+                    <a class="btn55 mr10" href="#" id="cpanel-login"><img src="images/icons/middlenav/linux.png" alt=""><span>{% trans 'Login to cPanel' %}</span></a>
+                    <a class="btn55 mr10" href="#" id="whm-login"><img src="images/icons/middlenav/linux.png" alt=""><span>{% trans 'Login to WHM' %}</span></a>
                     {% if service.reseller %}
                     <a class="btn55 mr10" href="{{ server.reseller_cpanel_url }}" target="_blank"><img src="images/icons/middlenav/linux.png" alt=""><span>{% trans 'Reseller control panel' %}</span></a>
                     {% endif %}
@@ -227,6 +228,20 @@ $(function() {
 		 bb.post(
             'admin/servicehosting/login_user_session',
              {order_id:{{order.id}}},
+            function(result) {
+				window.open(result, '_blank');
+            }
+        );
+        return false;
+        
+    });
+	
+	$('a#whm-login').bind('click',function(e){
+		e.preventDefault();
+		
+		 bb.post(
+            'admin/servicehosting/login_server_session',
+             {id:{{server.id}}},
             function(result) {
 				window.open(result, '_blank');
             }

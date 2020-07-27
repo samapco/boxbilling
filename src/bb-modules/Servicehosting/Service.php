@@ -969,4 +969,13 @@ class Service implements InjectionAwareInterface
 	   
     }
     
+    public function getWHMSessionUrl(\Model_ServiceHostingServer $model){  
+                
+        $adapter = $this->getServerManager($model);
+        $url =   $adapter->getWHMSessionUrl($model);
+       
+       return $url;
+	   
+    }
+
 }

@@ -433,4 +433,17 @@ class Admin extends \Api_Abstract
 	   
     }
     
+    /**
+     * returns whm login session url
+     */
+    public function login_server_session($data){
+        $required = array(
+            'id'    => 'Server id is missing',
+        );
+        $this->di['validator']->checkRequiredParamsForArray($required, $data);
+
+        $model = $this->di['db']->getExistingModelById('ServiceHostingServer', $data['id'], 'Server not found');
+        
+        return $this->getService()->getWHMSessionUrl($model);	   
+    }
 }

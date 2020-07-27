@@ -460,7 +460,20 @@ class Server_Manager_Whm extends Server_Manager
 
 		return $session_data->data->url;
 	}
-	
+
+	public function getWHMSessionUrl(\Model_ServiceHostingServer $model){
+		$this->getLog()->info('generating whm session token for '.$model->username);
+		$var_hash = Array(
+			'user'      => $model->username,
+            'preferred_domain'    => $model->hostname,
+			'service'	=> 'whostmgrd',
+			'api.version' => '1'
+		);
+		
+		$session_data = $this->_createUserLoginSession($var_hash);
+		return $session_data->data->url;
+	}
+
 }
 
 
