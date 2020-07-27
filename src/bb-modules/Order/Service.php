@@ -881,6 +881,7 @@ class Service implements InjectionAwareInterface
         $order->notes          = $this->di['array_get']($data, 'notes', $order->notes);
         $order->reason         = $this->di['array_get']($data, 'reason', $order->reason);
         $order->quantity         = $this->di['array_get']($data, 'quantity', $order->quantity);
+        $order->product_id         = $this->di['array_get']($data, 'product_id', $order->product_id);
 
         $this->updateOrderMeta($order, $this->di['array_get']($data, 'meta', null));
 

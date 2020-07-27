@@ -211,6 +211,14 @@
                     </div>
 
                     <div class="rowElem">
+                        <label>{% trans 'Product' %}</label>
+                        <div class="formRight noborder">
+                            {{ mf.selectbox('product_id', admin.product_get_pairs, order.product_id, 0, 'Select Product') }}
+                        </div>
+                        <div class="fix"></div>
+                    </div>
+
+                    <div class="rowElem">
                         <label>{% trans 'Changes status without performing action' %}</label>
                         <div class="formRight noborder">
                             {{ mf.selectbox('status', admin.order_get_status_pairs, order.status, 0, 'Select status') }}
