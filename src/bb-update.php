@@ -16,6 +16,17 @@
  * @license   http://www.boxbilling.com/LICENSE.txt
  * @version   $Id$
  */
+
+
+class BBPatch_24 extends BBPatchAbstract
+{
+    public function patch()
+    {
+        $q = "ALTER TABLE kb_article ADD `keywords` TEXT NULL AFTER  `status`;";
+        $this->execSql($q);
+    }
+} 
+
 class BBPatch_23 extends BBPatchAbstract
 {
     public function patch()

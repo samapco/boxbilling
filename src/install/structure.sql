@@ -673,6 +673,7 @@ CREATE TABLE `kb_article` (
   `content` text,
   `slug` varchar(255) DEFAULT NULL,
   `status` varchar(30) DEFAULT 'active' COMMENT 'active, draft',
+  `keywords` text,
   `created_at` datetime DEFAULT NULL,
   `updated_at` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),

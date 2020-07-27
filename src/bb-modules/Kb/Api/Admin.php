@@ -85,8 +85,9 @@ class Admin extends \Api_Abstract
         $title             = $data['title'];
         $status            = isset($data['status']) ? $data['status'] : \Model_KbArticle::DRAFT;
         $content           = $this->di['array_get']($data, 'content', NULL);
+        $keywords          = $this->di['array_get']($data, 'keywords', NULL);
 
-        return $this->getService()->createArticle($articleCategoryId, $title, $status, $content);
+        return $this->getService()->createArticle($articleCategoryId, $title, $status, $content,$keywords);
     }
 
     /**
@@ -116,9 +117,10 @@ class Admin extends \Api_Abstract
         $status            = $this->di['array_get']($data, 'status', null);
         $content           = $this->di['array_get']($data, 'content', null);
         $views             = $this->di['array_get']($data, 'views', null);
+        $keywords             = $this->di['array_get']($data, 'keywords', null);
 
 
-        return $this->getService()->updateArticle($data['id'], $articleCategoryId, $title, $slug, $status, $content, $views);
+        return $this->getService()->updateArticle($data['id'], $articleCategoryId, $title, $slug, $status, $content, $views,$keywords);
     }
 
     /**

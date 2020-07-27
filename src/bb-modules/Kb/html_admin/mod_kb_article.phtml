@@ -77,6 +77,14 @@
                 <div class="fix"></div>
             </div>
             
+            <div class="rowElem">
+                <label>{% trans 'Keywords (comma separated - Used to suggest articles)' %}:</label>
+                <div class="formRight">
+                    <input type="text" name="keywords" value="{{ post.keywords }}" />
+                </div>
+                <div class="fix"></div>
+            </div>
+            
             <input type="submit" value="{% trans 'Update' %}" class="greyishBtn submitForm" />
             <input type="hidden" name="id" value="{{ post.id }}"/>
         </fieldset>

@@ -98,9 +98,23 @@
                 <div class="control-group">
                     <label>{% trans 'Message' %}: </label>
                     <div class="controls">
-                        <textarea name="content" cols="10" rows="10" required="required" class="span5">{{ request.content|e }}</textarea>
+                        <textarea id="content" name="content" cols="10" rows="10" required="required" class="span5">{{ request.content|e }}</textarea>
                     </div>
                 </div>
+
+                <article  class="data-block" id="articles-display" style="display:none;">
+                
+                <div class="data-container">
+                <header>
+                 <h2>Suggested articles based on your message </h2>
+                </header>
+                <section>
+                        <ul id="suggested-articles">
+
+                         </ul>
+                </div>
+                </article>
+
     </div>
     <div class="modal-footer">
         <button class="btn btn-primary btn-large" type="submit" value="{% trans 'Submit' %}">{% trans 'Submit' %}</button>
@@ -135,6 +149,64 @@ $(function() {
     $('#submit-ticket').modal('show');
     {% endif %}
 
+     const debounce = (func, delay) => {
+            let debounceTimer
+            return function (...args) {
+                const context = this
+                if(debounceTimer){
+                  clearTimeout(debounceTimer)  
+                }                
+                debounceTimer = setTimeout(() => func.apply(context, args), delay)
+            }
+        }
+
+    let contentTextarea = document.getElementById('content');
+    contentTextarea.addEventListener('input', debounce(function(){
+    
+    if (contentTextarea.value.length > 0) {
+        $('#articles-display').show()
+      getKbArticles(contentTextarea.value);
+    }    
+    else { 
+        $('ul#suggested-articles').empty();
+        $('#articles-display').hide();
+         }
+    }, 250));
+
+    function getKbArticles(msg){
+         $.ajax({
+                url: bb.restUrl('guest/kb/article_get_list'),
+                data:{
+                    status: 'active',
+                    keywords: msg,
+                }, 
+                dataType: 'json',
+                success: function (data) {
+                 
+                    if (data.error) {
+                        if (data.error.code == 7777) {
+                            $('#account-created-info-block').show();
+                        } else {
+                            $('.wait').hide();
+                            bb.msg(data.error.message, 'error');
+                        }
+                    } else {
+                        if(data.result.list.length > 0){
+                            $('ul#suggested-articles').empty();
+                            $(data.result.list).each(function(index, article){                            
+                             let item =   '<li><a href="'+"{{ '/kb'|link }}"+'/'+article.category.slug+'/'+article.slug+'" target="_blank">'+article.title+'</a></li>';
+                             $('ul#suggested-articles').append(item);
+                            });  
+                    } else {
+                        $('ul#suggested-articles').empty();
+                        }
+                     
+                    }
+                }
+			});
+    }
+
 });
+  
 </script>
 {% endblock %}

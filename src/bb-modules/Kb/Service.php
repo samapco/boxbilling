@@ -25,29 +25,45 @@ class Service
         $this->di = $di;
     }
 
-    public function searchArticles($status = null, $search = null, $cat = null, $per_page = 100, $page = null)
+    public function searchArticles($status = null, $search = null, $cat = null, $per_page = 100, $page = null, $keywords = null)
     {
         $filter = array();
 
         $sql = "
             SELECT *
-            FROM kb_article
-            WHERE 1
-        ";
-
-        if ($cat) {
-            $sql .= " AND kb_article_category_id = :cid";
-            $filter[':cid'] = $cat;
-        }
+            FROM kb_article 
+            WHERE 1";
 
         if ($status) {
             $sql .= " AND status = :status";
             $filter[':status'] = $status;
         }
 
+        if ($cat) {
+            $sql .= " AND kb_article_category_id = :cid";
+            $filter[':cid'] = $cat;
+        }
+
         if ($search) {
             $sql .= " AND title LIKE :q OR content LIKE :q";
             $filter[':q'] = "%$search%";
+        }
+
+        // modified to allow multiple keyword search
+        if ($keywords) {
+            $words = array_filter(explode(' ', $keywords));
+          
+                $where = array();
+                foreach ($words as $key => $value) {
+                    if (strlen($value) > 3) {
+                        $where[] = " keywords like :keyword$key";
+                        $filter[":keyword$key"] = "%$value%";
+                    }
+                }
+
+                if (!empty($where)) {
+                    $sql = $sql . " AND (" . implode(' OR ', $where).")";
+                } 
         }
 
         $sql .= " ORDER BY kb_article_category_id DESC, views DESC";
@@ -104,6 +120,7 @@ class Service
             'created_at' => $model->created_at,
             'status'     => $model->status,
             'updated_at' => $model->updated_at,
+            'keywords'   => $model->keywords,
         );
 
         $cat = $this->di['db']->getExistingModelById('KbArticleCategory', $model->kb_article_category_id, 'Knowledge Base category not found');
@@ -125,7 +142,7 @@ class Service
         return $data;
     }
 
-    public function createArticle($articleCategoryId, $title, $status = null, $content = null)
+    public function createArticle($articleCategoryId, $title, $status = null, $content = null, $keywords = null)
     {
         if(!isset($status)){
             $status = \Model_KbArticle::DRAFT;
@@ -139,6 +156,7 @@ class Service
         $model->content                = $content;
         $model->updated_at             = date('Y-m-d H:i:s');
         $model->created_at             = date('Y-m-d H:i:s');
+        $model->keywords               = $keywords;
         $id                            = $this->di['db']->store($model);
 
         $this->di['logger']->info('Created new knowledge base article #%s', $id);
@@ -146,7 +164,7 @@ class Service
         return $id;
     }
 
-    public function updateArticle($id, $articleCategoryId = null, $title = null, $slug = null, $status = null, $content = null, $views = null)
+    public function updateArticle($id, $articleCategoryId = null, $title = null, $slug = null, $status = null, $content = null, $views = null, $keywords = null)
     {
         $model = $this->di['db']->findOne('KbArticle', 'id = ?', array($id));
 
@@ -177,6 +195,11 @@ class Service
         if (isset($views)) {
             $model->views = $views;
         }
+
+        if (isset($keywords)) {
+            $model->keywords = $keywords;
+        }
+
         $model->updated_at = date('Y-m-d H:i:s');
 
         $this->di['db']->store($model);
