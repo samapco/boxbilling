@@ -112,7 +112,7 @@ class Service implements InjectionAwareInterface
         if(isset($c['username']) && !empty($c['username'])) {
             $username = $c['username'];
         } else {
-            $username = $this->_generateUsername($model->sld.$model->tld);
+            $username = $this->_generateUsername($c);
         }        
         
         $model->username = $username;
@@ -383,11 +383,14 @@ class Service implements InjectionAwareInterface
      * Generate username by domain
      *
      */
-    private function _generateUsername($domain_name)
+    private function _generateUsername(array $config)
     {
-		$username =  preg_replace('/[^A-Za-z0-9]/', '', $domain_name);
-		$username = substr($username,0,7);
+		$sld = strtolower($config['sld']);
+		$tld = strtolower($config['tld']);
+		$username = $sld.$tld;
+		$username = preg_replace("/[^a-zA-Z]/", "", $username);
 		$randnum = rand(0, 9);
+        $username = substr($username, 0, 7); // max length 8    
         $username = $username . $randnum;
         return $username;
     }
@@ -977,5 +980,4 @@ class Service implements InjectionAwareInterface
        return $url;
 	   
     }
-
 }
