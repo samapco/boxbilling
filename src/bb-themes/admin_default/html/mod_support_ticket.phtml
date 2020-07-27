@@ -243,7 +243,7 @@
         {%  include 'mod_support_canned_selector.phtml' %}
     </div>
 
-    <form method="post" action="{{ 'api/admin/support/ticket_reply'|link }}" class="mainForm api-form" data-api-redirect="{{ 'support'|alink({'status' : 'open' }) }}">
+    <form method="post" action="{{ 'api/admin/support/ticket_reply'|link }}" class="mainForm api-form" data-api-redirect="{{ 'support/ticket'|alink }}/{{ticket.id}}">
         <fieldset>
             <textarea name="content" cols="5" rows="20" required="required" class="bb-textarea" id="rt">Hello {{ ticket.client.first_name }},
 {{ canned_delay_message }}
