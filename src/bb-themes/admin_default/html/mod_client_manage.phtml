@@ -1,6 +1,7 @@
 {% import "macro_functions.phtml" as mf %}
 {% extends "layout_default.phtml" %}
 {% set active_menu = 'client' %}
+{% set url = 'client/manage/' ~client.id %}
 {% block meta_title %}{{ client.first_name }} {{ client.last_name }}{% endblock %}
 
 {% block breadcrumbs %}
@@ -54,6 +55,10 @@
                     <tr>
                         <td>Email:</td>
                         <td>{{ client.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Phone:</td>
+                        <td>{{client.phone_cc}} {{ client.phone }}</td>
                     </tr>
                     <tr>
                         <td>Status:</td>
@@ -387,6 +392,7 @@
                 </tfoot>
             </table>
             
+            {% include "partial_pagination.phtml" with {'list': payments,'tab':'balance','url':url} %}
             <div class="help">
                 <h3>{% trans 'Add funds for client' %}</h3>
             </div>
@@ -457,6 +463,7 @@
                     </tr>
                 </tfoot>
             </table>
+            {% include "partial_pagination.phtml" with {'list': orders,'tab':'orders','url':url} %}
         </div>
 
         <div class="tab_content nopadding" id="tab-invoice">
@@ -501,6 +508,7 @@
                     </tr>
                 </tfoot>
             </table>
+            {% include "partial_pagination.phtml" with {'list': invoices,'tab':'invoice','url':url} %}
         </div>
 
         <div class="tab_content nopadding" id="tab-support">
@@ -543,6 +551,8 @@
                     </tr>
                 </tfoot>
             </table>
+			
+            {% include "partial_pagination.phtml" with {'list': tickets,'tab':'support','url':url} %}
         </div>
         
         <div class="tab_content nopadding" id="tab-history">
@@ -574,6 +584,8 @@
                     {% endfor %}
                 </tbody>
             </table>
+					                
+            {% include "partial_pagination.phtml" with {'list': logins,'tab':'history','url':url} %}
         </div>
 
         <div class="tab_content nopadding" id="tab-emails">
@@ -607,7 +619,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-            {% include "partial_pagination.phtml" with {'list': emails} %}
+            {% include "partial_pagination.phtml" with {'list': emails,'tab':'emails','url':url} %}
         </div>
 
         <div class="tab_content nopadding" id="tab-transactions">
