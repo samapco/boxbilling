@@ -114,6 +114,11 @@ class Client extends \Api_Abstract
         if($model->price <= 0) {
             throw new \Box_Exception('Order :id is free. No need to generate invoice.', array(':id'=>$model->id));
         }
+
+        if($model->status != \Model_ClientOrder::STATUS_ACTIVE && $model->status != \Model_ClientOrder::STATUS_SUSPENDED) {
+            throw new \Box_Exception('Renewal invoice can only be generated for active or suspended orders');  
+       }
+	   
         $service = $this->getService();
         $invoice = $service->generateForOrder($model);
         $service->approveInvoice($invoice, array('id'=>$invoice->id, 'use_credits'=>true));
