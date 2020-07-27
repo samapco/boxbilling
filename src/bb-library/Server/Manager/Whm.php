@@ -149,13 +149,16 @@ class Server_Manager_Whm extends Server_Manager
                 'user'          =>  $a->getUsername(),
                 'makeowner'     =>  0,
             );
-            $this->_request('setupreseller', $params);
 
+           // $this->_request('setupreseller', $params);
+			
+			/*
             $params = array(
                 'reseller'  =>  $a->getUsername(),
                 'acllist'   =>  $package->getAcllist(),
             );
             $this->_request('setacls', $params);
+			*/
         }
 
         return $result;
@@ -224,8 +227,10 @@ class Server_Manager_Whm extends Server_Manager
 
 		$var_hash = array(
 			'user'              => $a->getUsername(),
-			'pass'              => $new,
-			'db_pass_update'	=> false,
+			'password'          => $new,
+			'db_pass_update'	=> 1,
+			'enabledigest'		=> 1,
+			'api.version'		=> 1,
 		);
 
 		$result = $this->_request($action, $var_hash);
@@ -402,6 +407,8 @@ class Server_Manager_Whm extends Server_Manager
     private function _request($action, $params = array())
     {
         $this->getLog()->debug(sprintf('Requesting WHM server action "%s" with params "%s" ', $action, print_r($params, true)));
+		
+		//$params['api.version'] = 1;
         $body = $this->_api->xmlapi_query($action, $params);
 
         $this->getLog()->debug('Response: '.$body);
@@ -439,13 +446,30 @@ class Server_Manager_Whm extends Server_Manager
             throw new Server_Exception($msg);
         }
 
+		if(isset($json->metadata) && isset($json->metadata->result) && $json->metadata->result == '0'){
+			$msg = sprintf('WHM server response error calling action %s: "%s"', $action, $json->metadata->reason);
+            $this->getLog()->crit($msg);
+            throw new Server_Exception($msg);
+		}
+
         return $json;
 	}
 	
+	
 	private function _createUserLoginSession($var_hash)
     {
+        try{
         $action = 'create_user_session';			
         return $this->_request($action, $var_hash);
+	}
+        catch(Exception $ex){         
+			if(strpos($ex->getMessage(), "WHM server response error calling action create_user_session:") !== FALSE){
+				$msg = str_replace("WHM server response error calling action create_user_session:", "", $ex->getMessage());
+				$msg = str_replace("parameter is invalid", "is not pointing to our server", $msg);
+			}
+			 
+            throw new Server_Exception($msg);
+        }  
 	}
 
 	public function getCpanelSessionUrl(Server_Account $a){
@@ -454,7 +478,7 @@ class Server_Manager_Whm extends Server_Manager
             'user'      => $a->getUsername(),
             'preferred_domain'    => $a->getDomain(),
 			'service'	=> 'cpaneld',
-			'api.version' => '1'
+			'api.version'		=> 1
 		);		
 		$session_data = $this->_createUserLoginSession($var_hash);
 
@@ -467,7 +491,7 @@ class Server_Manager_Whm extends Server_Manager
 			'user'      => $model->username,
             'preferred_domain'    => $model->hostname,
 			'service'	=> 'whostmgrd',
-			'api.version' => '1'
+			'api.version'		=> 1
 		);
 		
 		$session_data = $this->_createUserLoginSession($var_hash);
@@ -1437,7 +1461,7 @@ class xmlapi {
 			error_log("passwd requires that an username and password are passed to it");
 			return false;
 		}
-		return $this->xmlapi_query('passwd', array('user' => $username, 'pass' => $pass));
+		return $this->xmlapi_query('passwd', array('user' => $username, 'pass' => $pass,'enabledigest' => true));
 	}
 
 	/**
@@ -1959,7 +1983,7 @@ class xmlapi {
 	* @return mixed
 	* @link http://docs.cpanel.net/twiki/bin/view/AllDocumentation/AutomationIntegration/AddResellerPrivileges XML API Call documentation
 	*/
-	public function setupreseller($username, $makeowner = true) {
+	public function setupreseller($username, $makeowner = false) {
 		if (!isset($username)) {
 			error_log("setupreseller requires that username is passed to it");
 			return false;
