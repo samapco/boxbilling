@@ -92,7 +92,9 @@ class Payment_Adapter_ClientBalance implements \Box\InjectionAwareInterface
         if($invoice_id) {
             $invoiceService->payInvoiceWithCredits($invoiceModel);
         }
-        $invoiceService->doBatchPayWithCredits(array('client_id' => $invoiceModel->client_id));
+
+        /**This is not necessary. It can create problems with unauthorised payments. */
+      //  $invoiceService->doBatchPayWithCredits(array('client_id' => $invoiceModel->client_id, 'use_credit' => true));
 
         $tx->error = '';
         $tx->error_code = '';
