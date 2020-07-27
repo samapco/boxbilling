@@ -351,8 +351,8 @@ class Service implements InjectionAwareInterface
         $di = $event->getDi();
         $service = $di['mod_service']('invoice');
 
-        //send reminder once a day when 5 days has passed
-        if($params['days_passed'] != 5) {
+        //send invoice due reminder once a day for 3 days after invoice due date.
+        if( $params['days_passed'] > 3 ) {
             return;
         }
         
@@ -1045,7 +1045,7 @@ class Service implements InjectionAwareInterface
             $this->di['events_manager']->fire(array('event'=>'onEventBeforeInvoiceIsDue', 'params'=>$params));
         }
 
-        $after_due_list = $this->di['db']->getAll("SELECT id, ABS(DATEDIFF(due_at, NOW())) as days_passed FROM invoice WHERE status = 'unpaid' AND approved = 1 AND ((due_at < NOW()) OR (ABS(DATEDIFF(due_at, NOW())) = 0 ))");
+        $after_due_list = $this->di['db']->getAll("SELECT id, ABS(DATEDIFF(due_at, NOW())) as days_passed FROM invoice WHERE status = 'unpaid' AND approved = 1 AND (due_at < NOW() OR DATEDIFF(due_at, NOW()) = 0 )");
         foreach($after_due_list as $params) {
             $this->di['events_manager']->fire(array('event'=>'onEventAfterInvoiceIsDue', 'params'=>$params));
         }
