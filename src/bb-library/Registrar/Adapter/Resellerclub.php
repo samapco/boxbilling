@@ -169,6 +169,7 @@ class Registrar_Adapter_Resellerclub extends Registrar_AdapterAbstract
             'address-line-1'    =>  $c->getAddress1(),
             'city'              =>  $c->getCity(),
             'zipcode'           =>  $c->getZip(),
+            'zip'           =>  $c->getZip(),
             'phone-cc'          =>  $c->getTelCc(),
             'phone'             =>  $c->getTel(),
             'country'           =>  $c->getCountry(),
@@ -327,7 +328,16 @@ class Registrar_Adapter_Resellerclub extends Registrar_AdapterAbstract
             'billing-contact-id'=>  $billing_contact_id,
             'invoice-option'    =>  'NoInvoice',
             'protect-privacy'   =>  false,
+            'zip' =>  '0000',
+           
         );
+
+        	if($tld == '.co') {
+			$params['attr-name1'] = 'idnLanguageCode';
+            $params['attr-value1'] = 'da';
+		   }
+
+        
 
         if($tld == '.asia') {
             $params['attr-name1'] = 'cedcontactid';
@@ -466,6 +476,7 @@ class Registrar_Adapter_Resellerclub extends Registrar_AdapterAbstract
             'state'                          =>  $c->getState(),
             'country'                        =>  $c->getCountry(),
             'zipcode'                        =>  $c->getZip(),
+            'zip'                            =>  $c->getZip(),
             'phone-cc'                       =>  $c->getTelCc(),
             'phone'                          =>  $phoneNum,
             'lang-pref'                      =>  'en',
@@ -509,6 +520,7 @@ class Registrar_Adapter_Resellerclub extends Registrar_AdapterAbstract
             'state'                          =>  $c->getState(),
             'country'                        =>  $c->getCountry(),
             'zipcode'                        =>  $c->getZip(),
+            'zip'           =>  $c->getZip(),
             'phone-cc'                       =>  $c->getTelCc(),
             'phone'                          =>  $c->getTel(),
         );        
@@ -682,7 +694,7 @@ class Registrar_Adapter_Resellerclub extends Registrar_AdapterAbstract
         $params = $this->includeAuthorizationParams($params);
 
         $opts = array(
-            CURLOPT_CONNECTTIMEOUT  => 30,
+            CURLOPT_CONNECTTIMEOUT  => 60,
             CURLOPT_RETURNTRANSFER  => true,
             CURLOPT_TIMEOUT         => 60,
             CURLOPT_URL             => $this->_getApiUrl().$url.'.'.$type,
@@ -792,6 +804,7 @@ class Registrar_Adapter_Resellerclub extends Registrar_AdapterAbstract
             'state'                          =>  $client->getState(),
             'country'                        =>  $client->getCountry(),
             'zipcode'                        =>  $client->getZip(),
+            'zip'                        =>  $client->getZip(),
             'phone-cc'                       =>  $client->getTelCc(),
             'phone'                          =>  substr($client->getTel(), 0, 12),//phone must be 4-12 digits
         );
@@ -816,6 +829,8 @@ class Registrar_Adapter_Resellerclub extends Registrar_AdapterAbstract
 
         if($tld == '.uk' || $tld == '.co.uk' || $tld == '.org.uk') {
             $contact['type'] =   'UkContact';
+            $contact['attr-name1'] = 'service-contact';
+            $contact['attr-value1'] = '0';
         }
 
         if($tld == '.eu') {
