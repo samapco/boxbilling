@@ -367,7 +367,7 @@ class Service implements InjectionAwareInterface
     {
         $query = "SELECT co.* from client_order co
                 LEFT JOIN client c ON c.id = co.client_id
-                LEFT JOIN client_order_meta meta ON meta.client_order_id = co.id";
+                LEFT JOIN client_order_meta meta ON meta.client_order_id = co.id LEFT JOIN invoice inv ON co.unpaid_invoice_id=inv.id";
 
         $search      = $this->di['array_get']($data, 'search', FALSE); 
         $hide_addons = $this->di['array_get']($data, 'hide_addons', NULL); 
@@ -385,6 +385,7 @@ class Service implements InjectionAwareInterface
 
         $client_id      = $this->di['array_get']($data, 'client_id', NULL); 
         $invoice_option = $this->di['array_get']($data, 'invoice_option', NULL); 
+		$invoice_status 	= $this->di['array_get']($data, 'invoice_status', NULL);
 
         $where    = array();
         $bindings = array();
@@ -398,6 +399,12 @@ class Service implements InjectionAwareInterface
             $where[]                     = "co.invoice_option = :invoice_option";
             $bindings[':invoice_option'] = $invoice_option;
         }
+
+		if($invoice_status)
+		{
+			$where[]                     = "inv.status = :invoice_status";
+            $bindings[':invoice_status'] = $invoice_status;
+		}
 
         if ($id) {
             $where[]         = "co.id = :id";

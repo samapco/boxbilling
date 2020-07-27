@@ -68,6 +68,14 @@
                     </div>
                     <div class="fix"></div>
                 </div>
+				<div class="rowElem">
+                    <label>{% trans 'Invoice Status' %}</label>
+                        <div class="formRight">
+                            
+                            <input type="checkbox" name="invoice_status" value="unpaid"{% if request.invoice_status == 'unpaid' %} checked="checked"{% endif %}/>&nbsp;Unpaid
+                        </div>
+                    <div class="fix"></div>
+                </div>
 
                 <div class="rowElem">
                     <label>{% trans 'Creation date' %}</label>
