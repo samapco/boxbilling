@@ -1,7 +1,7 @@
 {% extends request.ajax ? "layout_blank.phtml" : "layout_default.phtml" %}
 {% import "macro_functions.phtml" as mf %}
 {% block meta_title %}{% trans 'Email' %}{% endblock %}
-
+{% set url = 'extension/settings/email' %}
 {% block breadcrumbs %}
     <ul>
         <li class="firstB"><a href="{{ '/'|alink }}">{% trans 'Home' %}</a></li>
@@ -9,7 +9,6 @@
         <li class="lastB">{% trans 'Email' %}</li>
     </ul>
 {% endblock %}
-
 
 {% set active_menu = 'system' %}
 {% block content %}
@@ -59,6 +58,11 @@
                     </td>
                 </tr>
                 {% endfor %}
+					<tr> 
+                    <td colspan="5">
+                    {% include "partial_pagination.phtml" with {'list': templates, 'url': url } %}
+                    </td> 
+                    </tr>
                 </tbody>
                 <tfoot>
                     <tr>
@@ -70,8 +74,8 @@
                             </div>
                         </td>
                     </tr>
-                </tfoot>
-            </table>
+                </tfoot>     
+                </table>
         </div>
         
         {% set params = admin.extension_config_get({"ext":"mod_email"}) %}
