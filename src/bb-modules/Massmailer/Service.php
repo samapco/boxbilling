@@ -87,27 +87,13 @@ class Service implements \Box\InjectionAwareInterface
         $sql="SELECT c.id, c.first_name, c.last_name 
             FROM client c
             LEFT JOIN client_order co ON (co.client_id = c.id)
+            LEFT JOIN service_hosting sh ON (co.service_id = sh.id)
             WHERE 1
         ";
         
         $values = array();
-        if(!empty($filter)) {
-            if(isset($filter['client_status']) && !empty($filter['client_status'])) {
-                $sql .= sprintf(" AND c.status IN ('%s')", implode("', '", $filter['client_status']));
-            }
             
-            if(isset($filter['client_groups']) && !empty($filter['client_groups'])) {
-                $sql .= sprintf(" AND c.client_group_id IN ('%s')", implode("', '", $filter['client_groups']));
-            }
-            
-            if(isset($filter['has_order']) && !empty($filter['has_order'])) {
-                $sql .= sprintf(" AND co.product_id IN ('%s')", implode("', '", $filter['has_order']));
-            }
-            
-            if(isset($filter['has_order_with_status']) && !empty($filter['has_order_with_status'])) {
-                $sql .= sprintf(" AND co.status IN ('%s')", implode("', '", $filter['has_order_with_status']));
-            }
-        }
+        $this->parseQueryFilters($sql,$filter);
         
         $sql .= ' GROUP BY c.id ORDER BY c.id DESC';
         
@@ -126,15 +112,19 @@ class Service implements \Box\InjectionAwareInterface
         $client = $clientService->get(array('id'=>$client_id));
         $clientArr = $clientService->toApiArray($client, true, null);
 
+        $ordersInvolved = $this->getOrdersInvolved($model, $client_id);
+
         $vars = array();
         $vars['c'] = $clientArr;
         $vars['_client_id'] = $client->id;
+        $vars['orders'] = $ordersInvolved;
         $vars['_tpl'] = $model->subject;
         $ps = $systemService->renderString($vars['_tpl'], true, $vars);
         
         $vars = array();
         $vars['c'] = $clientArr;
         $vars['_client_id'] = $client->id;
+        $vars['orders'] = $ordersInvolved;
         $vars['_tpl'] = $model->content;
         $pc = $systemService->renderString($vars['_tpl'], true, $vars);
         
@@ -224,5 +214,58 @@ class Service implements \Box\InjectionAwareInterface
             throw new \Exception('Mass mail message not found');
         }
         $this->sendMessage($model, $params['client_id']);
+    }
+
+    
+    private function getOrdersInvolved($model,$client_id, $data = array())
+    {
+        $row = $this->toApiArray($model);
+        $filter = $row['filter'];
+        
+        $sql="SELECT co.title, c.id
+            FROM client c
+            LEFT JOIN client_order co ON (co.client_id = c.id)
+            LEFT JOIN service_hosting sh ON (co.service_id = sh.id)
+            WHERE c.id = :client_id
+        ";
+        
+        $values = array(
+            'client_id' => $client_id,
+        );
+
+       $this->parseQueryFilters($sql,$filter);
+        
+        $sql .= ' GROUP BY co.id ORDER BY co.id DESC';
+        
+        if(isset($data['debug']) && $data['debug']) {
+            throw new \Exception($sql. ' '. print_r($values, 1));
+        }
+        
+        return $this->di['db']->getAll($sql, $values);
+    }
+
+    private function parseQueryFilters(&$sql,$filter){
+
+         if(!empty($filter)) {
+            if(isset($filter['client_status']) && !empty($filter['client_status'])) {
+                $sql .= sprintf(" AND c.status IN ('%s')", implode("', '", $filter['client_status']));
+            }
+            
+            if(isset($filter['client_groups']) && !empty($filter['client_groups'])) {
+                $sql .= sprintf(" AND c.client_group_id IN ('%s')", implode("', '", $filter['client_groups']));
+            }
+            
+            if(isset($filter['has_order']) && !empty($filter['has_order'])) {
+                $sql .= sprintf(" AND co.product_id IN ('%s')", implode("', '", $filter['has_order']));
+            }
+            
+            if(isset($filter['has_order_with_status']) && !empty($filter['has_order_with_status'])) {
+                $sql .= sprintf(" AND co.status IN ('%s')", implode("', '", $filter['has_order_with_status']));
+            }			
+
+            if(isset($filter['has_server_id']) && !empty($filter['has_server_id'])) {
+                $sql .= sprintf(" AND sh.service_hosting_server_id IN ('%s')", implode("', '", $filter['has_server_id']));
+            }
+        }
     }
 }

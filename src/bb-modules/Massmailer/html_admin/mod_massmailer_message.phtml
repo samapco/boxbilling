@@ -71,6 +71,17 @@
                 </div>
                 <div class="fix"></div>
             </div>
+            <div class="rowElem">
+                <label>{% trans 'Server' %}</label>
+                <div class="formRight">
+                            <select name="filter[has_server_id][]" multiple="multiple" size="5">
+                                {% for id,label in admin.servicehosting_server_get_pairs %}
+                                <option value="{{id}}" {% if id in msg.filter.has_server_id %} selected="selected"{% endif %}>{{label}}</option>
+                                {% endfor %}
+                            </select>
+                </div>
+                <div class="fix"></div>
+            </div>
                 </fieldset>
         
             <fieldset>

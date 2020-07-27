@@ -120,6 +120,14 @@ Urna parturient, ultricies nascetur? Et a. Elementum in dapibus ut vel ut
 magna tempor, dapibus lacus sed? Ut velit dignissim placerat, tristique pid 
 vut amet et nunc! Elementum dolor, dictumst porta ultrices. Rhoncus, amet. 
 
+**Services Involved**
+
+{% for key,value in orders %}
+    {{ key+1 }}. {{ value.title }}
+{% endfor %}
+
+
+
 Order our services at {{ "order"|link }}
 
 {{ guest.system_company.name }} - {{ guest.system_company.signature }}
