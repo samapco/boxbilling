@@ -439,8 +439,10 @@
             <tbody>
                 {% for i, item in invoice.lines %}
                 <tr>
-                    <td style="width: 60%;"><input type="text" name="items[{{ item.id }}][title]" value="{{ item.title }}" style="width:98%"></td>
-                    <td style="width: 20%;"><input type="text" name="items[{{ item.id }}][price]" value="{{ item.price }}" style="width:80px"> {{ invoice.currency }}</td>
+                    <td style="width: 60%;"><input type="text" name="items[{{ item.id }}][title]" value="{{ item.title }}" style="width:80%">
+					&nbsp; X &nbsp; <input type="text" name="items[{{ item.id }}][quantity]" value="{{ item.quantity }}" style="width:10%"> 				
+					</td>
+                    <td style="width: 20%;"><input type="text" name="items[{{ item.id }}][price]" value="{{ item.total }}" style="width:80px"> {{ invoice.currency }}</td>
                     <td style="width: 5%;">
                         <input type="checkbox" name="items[{{ item.id }}][taxed]" value="1" {% if item.taxed %}checked="checked"{% endif %}/>
                     </td>
