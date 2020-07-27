@@ -103,7 +103,7 @@ class Service implements InjectionAwareInterface
             throw new \Box_Exception('Could not activate order. Service was not created');
         }
 
-        $pass = $this->di['tools']->generatePassword(10, 4);
+        $pass = $this->di['tools']->generatePassword(15, 4);
         $c = $orderService->getConfig($order);
         if(isset($c['password']) && !empty($c['password'])) {
             $pass = $c['password'];
@@ -123,6 +123,10 @@ class Service implements InjectionAwareInterface
             list($adapter, $account) = $this->_getAM($model);
             $adapter->createAccount($account);
         }
+        
+        //Don't store passwords
+        $model->pass = "";
+        $this->di['db']->store($model);
         
         return array(
             'username'  =>  $username,
@@ -332,7 +336,8 @@ class Service implements InjectionAwareInterface
             $adapter->changeAccountPassword($account, $p);
         }
 
-        $model->pass = $p;
+        // Don't store passwords
+        //$model->pass = $p;
         $model->updated_at = date('Y-m-d H:i:s');
         $this->di['db']->store($model);
         $this->di['logger']->info('Changed hosting account %s password', $model->id);
