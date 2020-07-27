@@ -88,4 +88,13 @@ class Client extends \Api_Abstract
 
         return array($order, $s);
     }
+
+    /**
+     * returns cpanel login session url
+     */
+    public function login_user_session($data){
+        list($order, $s) = $this->_getService($data);
+        return $this->getService()->getCpanelSessionUrl($s);
+	   
+    }
 }

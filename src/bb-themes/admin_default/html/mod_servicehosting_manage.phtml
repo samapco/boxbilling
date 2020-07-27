@@ -218,3 +218,22 @@
     <input class="greyishBtn submitForm" type="submit" value="{% trans 'Change' %}">
 </fieldset>
 </form>
+
+<script type="text/javascript">
+$(function() {
+      
+	$('#cpanel-login').bind('click',function(e){
+		
+		 bb.post(
+            'admin/servicehosting/login_user_session',
+             {order_id:{{order.id}}},
+            function(result) {
+				window.open(result, '_blank');
+            }
+        );
+        return false;
+        
+    });
+
+});
+</script>
