@@ -831,7 +831,7 @@ class Service implements InjectionAwareInterface
 
     public function getCategoryProducts(\Model_ProductCategory $model)
     {
-        return $this->di['db']->find('Product', 'is_addon = 0 and status="enabled" and hidden = 0 and product_category_id = ?', array($model->id));
+        return $this->di['db']->find('Product', 'is_addon = 0 and status="enabled" and hidden = 0 and product_category_id = ? ORDER BY priority ASC', array($model->id));
 
     }
 
