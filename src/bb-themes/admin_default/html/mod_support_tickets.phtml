@@ -204,9 +204,17 @@
                     <div class="rowElem">
                         <label>{% trans 'Message' %}</label>
                         <div class="formRight">
-                        <textarea name="content" cols="5" rows="10" required="required" id="msg-area-{{message.id}}">
+                            <div class="widget">
+                                <div class="head">
+                                <h5 class="iSpeech">{% trans 'Select Canned Response' %}</h5>
+                                {%  include 'mod_support_canned_selector.phtml' %}
+                                </div>
+                                <textarea name="content" cols="5" rows="10" required="required" class="bb-textarea" id="rt">
+							    {{ canned_delay_message }}
 
-{{ profile.signature }}</textarea>
+                                {{ profile.signature }}
+					            </textarea>
+                            </div>
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -253,7 +261,8 @@
                         <div class="formRight">
                         <textarea name="message" cols="5" rows="10" required="required">
 
-{{ profile.signature }}</textarea>
+                        {{ profile.signature }}
+                        </textarea>
                         </div>
                         <div class="fix"></div>
                     </div>
@@ -323,3 +332,4 @@ function onAfterPublicTicketCreate(result) {
 
 </script>
 {% endblock %}
+{% block head %}{{ mf.bb_editor('.bb-textarea') }}{% endblock %}
