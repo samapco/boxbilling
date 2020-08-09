@@ -1051,7 +1051,7 @@ class Service implements \Box\InjectionAwareInterface
         );
     }
 
-    public function updateDomain(\Model_ServiceDomain $s, $data)
+    public function update(\Model_ServiceDomain $s, $data)
     {
         $s->ns1 = $this->di['array_get']($data, 'ns1', $s->ns1);
         $s->ns2 = $this->di['array_get']($data, 'ns2', $s->ns2);

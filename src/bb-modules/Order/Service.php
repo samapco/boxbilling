@@ -882,8 +882,10 @@ class Service implements InjectionAwareInterface
         }
 
 		$client_id = $this->di['array_get']($data, 'client_id');
+        $client_changed = false;
 		if(isset($client_id) && $client_id != $order->client_id){
 			$order->client_id = $client_id;
+            $client_changed = true;
 		}
 		
 		
@@ -900,6 +902,15 @@ class Service implements InjectionAwareInterface
 
         $order->updated_at = date('Y-m-d H:i:s');
         $this->di['db']->store($order);
+        if($client_changed){
+            $srepo = $this->di['mod_service']('service' . $order->service_type);
+            if(method_exists($srepo, 'update')){                
+                $s_model = $this->getOrderService($order);
+                $srepo->update($s_model, array('client_id' => $order->client_id));
+            } 
+            else { error_log(sprintf('service #%s method update is missing for order %s', $order->service_type, $order->id)); }
+            
+        }
 
         $this->di['events_manager']->fire(array('event' => 'onAfterAdminOrderUpdate', 'params' => array('id' => $order->id)));
 

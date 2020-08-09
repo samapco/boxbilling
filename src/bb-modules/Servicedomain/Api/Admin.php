@@ -40,7 +40,7 @@ class Admin extends \Api_Abstract
     {
         $s = $this->_getService($data);
 
-        return $this->getService()->updateDomain($s, $data);
+        return $this->getService()->update($s, $data);
     }
 
     /**
